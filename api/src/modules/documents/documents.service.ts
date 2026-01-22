@@ -11,6 +11,17 @@ export class DocumentsService {
 		private readonly prisma: PrismaService,
 	) {}
 
+	public async listDocumentsByEmail(email: string) {
+		return this.prisma.document.findMany({
+			where: {
+				userEmail: email,
+			},
+			orderBy: {
+				uploadedAt: 'desc',
+			},
+		});
+	}
+
 	public async getPresignedUrl(body: GetPutPresignedUrlDto) {
 		const prefix = extensions[body.contentType];
 

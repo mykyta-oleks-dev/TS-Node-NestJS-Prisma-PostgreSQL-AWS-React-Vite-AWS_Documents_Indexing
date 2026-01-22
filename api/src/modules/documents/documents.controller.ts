@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { S3Service } from '../s3/s3.service';
 import { DocumentsService } from './documents.service';
 import { GetPutPresignedUrlDto } from './dtos/presigned-url.dto';
+import { GetDocumentsDto } from './dtos/get-documents.dto';
 
 @Controller('documents')
 export class DocumentsController {
@@ -11,8 +12,8 @@ export class DocumentsController {
 	) {}
 
 	@Get()
-	public getHello(): string {
-		return 'Hello from DocumentsController';
+	public getDocumentsByEmail(@Body() { email }: GetDocumentsDto) {
+		return this.documentsService.listDocumentsByEmail(email);
 	}
 
 	@Post('presigned-url')
