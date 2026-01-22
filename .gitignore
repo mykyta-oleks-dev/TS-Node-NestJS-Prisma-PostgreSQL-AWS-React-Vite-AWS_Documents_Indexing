@@ -4,3 +4,4 @@ build/
 generated/
 .env*
 !.env.example
+.vscode

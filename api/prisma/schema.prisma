@@ -5,8 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
@@ -20,10 +21,12 @@ enum Status {
 }
 
 model Document {
-  id         Int      @id @default(autoincrement())
-  userEmail  String
+  id         String   @id @default(uuid())
+  userEmail  String   @map("user_email")
   filename   String
+  mimeType   String   @map("mime_type")
   uploadedAt DateTime @default(now())
-  s3Url      String
   status     Status   @default(pending)
+
+  @@map("documents")
 }
