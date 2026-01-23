@@ -3,6 +3,8 @@ import { DocumentsRepository } from '../../documents/documents.repository';
 import { S3Record } from '../../../shared/types/sqs.types';
 import { S3Service } from '../../s3/s3.service';
 import { DocumentTextService } from '../../documents/services/document-text.service';
+import { Document } from '../../../generated/prisma/client';
+import { OpenSearchService } from '../../opensearch/opensearch.service';
 
 @Injectable()
 export class DocumentsSQSHandler {
@@ -10,6 +12,7 @@ export class DocumentsSQSHandler {
 		private readonly db: DocumentsRepository,
 		private readonly s3: S3Service,
 		private readonly documentTextService: DocumentTextService,
+		private readonly openSearchService: OpenSearchService,
 	) {}
 
 	public async handle(record: S3Record) {
@@ -22,15 +25,32 @@ export class DocumentsSQSHandler {
 			return;
 		}
 
-		const stream = await this.s3.getFile(key);
-		const buffer = await this.s3.streamToBuffer(stream);
-
-		if (buffer.length === 0) {
-			throw new Error(`Document "${key}" not yet available, retrying`);
+		if (record.eventName === 'ObjectCreated:Put') {
+			await this.processObjectCreated(document, key);
 		}
+	}
 
-		const text = await this.documentTextService.extract(buffer);
+	private async processObjectCreated(document: Document, key: string) {
+		try {
+			const stream = await this.s3.getFile(key);
+			const buffer = await this.s3.streamToBuffer(stream);
 
-		console.log(text);
+			if (buffer.length === 0) {
+				throw new Error(
+					`Document "${key}" not yet available, retrying`,
+				);
+			}
+
+			const text = await this.documentTextService.extract(buffer);
+
+			await this.openSearchService.indexDocument(document, text);
+			await this.db.setStatus(document.id, 'success');
+		} catch (error) {
+			console.error(
+				`Error processing document with key ${key}:`,
+				(error as Error).message,
+			);
+			await this.db.setStatus(document.id, 'error');
+		}
 	}
 }

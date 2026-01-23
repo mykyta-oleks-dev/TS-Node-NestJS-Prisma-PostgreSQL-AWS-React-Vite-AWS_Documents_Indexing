@@ -10,6 +10,7 @@ import {
 	TypedConfigModule,
 } from './shared/config/app.config';
 import { SQSModule } from './modules/sqs/sqs.module';
+import { OpenSearchModule } from './modules/opensearch/opensearch.module';
 
 @Module({
 	imports: [
@@ -19,6 +20,7 @@ import { SQSModule } from './modules/sqs/sqs.module';
 		DocumentsModule,
 		S3Module,
 		SQSModule,
+		OpenSearchModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],

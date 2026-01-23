@@ -8,6 +8,7 @@ import awsConfig from './aws.config';
 import { Global, Module } from '@nestjs/common';
 import TypedConfigService from '../types/config-service.types';
 import prismaConfig from './prisma.config';
+import openSearchConfig from './opensearch.config';
 
 export const appConfigSchema = Joi.object({
 	DATABASE_URL: Joi.string().required(),
@@ -16,11 +17,15 @@ export const appConfigSchema = Joi.object({
 	AWS_SQS_QUEUE_URL: Joi.string().required(),
 	AWS_ACCESS_KEY_ID: Joi.string().required(),
 	AWS_SECRET_ACCESS_KEY: Joi.string().required(),
+	OPENSEARCH_NODE: Joi.string().required(),
+	OPENSEARCH_INDEX: Joi.string().required(),
+	OPENSEARCH_USERNAME: Joi.string().required(),
+	OPENSEARCH_PASSWORD: Joi.string().required(),
 });
 
 export const appConfigOptions: ConfigModuleOptions = {
 	isGlobal: true,
-	load: [awsConfig, prismaConfig],
+	load: [awsConfig, prismaConfig, openSearchConfig],
 	validationSchema: appConfigSchema,
 	validationOptions: {
 		allowUnknown: true,
