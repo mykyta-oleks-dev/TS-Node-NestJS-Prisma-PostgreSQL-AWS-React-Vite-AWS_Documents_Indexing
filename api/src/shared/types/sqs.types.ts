@@ -28,7 +28,7 @@ export interface S3Record extends SQSRecord {
 export const isS3Record = (record: SQSRecord): record is S3Record => {
 	return (
 		record.eventSource === 'aws:s3' &&
-		record.eventName in s3Events &&
+		s3Events.includes(record.eventName as S3Event) &&
 		's3' in record
 	);
 };

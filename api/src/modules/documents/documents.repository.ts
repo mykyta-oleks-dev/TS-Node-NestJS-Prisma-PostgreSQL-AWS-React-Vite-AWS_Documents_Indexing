@@ -19,6 +19,10 @@ export class DocumentsRepository {
 		});
 	}
 
+	public async getDocumentByKey(key: string) {
+		return this.prisma.document.findUnique({ where: { key } });
+	}
+
 	public async createDocumentRecord(body: GeneratePutUrlBodyDto) {
 		const extension = extensions[body.contentType];
 

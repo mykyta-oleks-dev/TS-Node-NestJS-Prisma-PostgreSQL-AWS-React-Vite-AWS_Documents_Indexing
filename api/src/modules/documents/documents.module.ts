@@ -3,11 +3,12 @@ import { DocumentsController } from './documents.controller';
 import { DocumentsService } from './documents.service';
 import { S3Module } from '../s3/s3.module';
 import { DocumentsRepository } from './documents.repository';
+import { DocumentTextService } from './services/document-text.service';
 
 @Global()
 @Module({
-	providers: [DocumentsRepository],
-	exports: [DocumentsRepository],
+	providers: [DocumentTextService, DocumentsRepository],
+	exports: [DocumentTextService, DocumentsRepository],
 })
 export class DocumentsDomainModule {}
 

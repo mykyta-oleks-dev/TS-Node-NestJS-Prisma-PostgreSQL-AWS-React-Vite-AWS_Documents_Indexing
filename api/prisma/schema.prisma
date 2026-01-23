@@ -26,7 +26,7 @@ model Document {
   filename   String
   mimeType   String   @map("mime_type")
   uploadedAt DateTime @default(now())
-  key        String
+  key        String   @unique
   status     Status   @default(pending)
 
   @@map("documents")

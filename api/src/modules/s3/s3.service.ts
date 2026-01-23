@@ -1,9 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import {
+	S3Client,
+	PutObjectCommand,
+	GetObjectCommand,
+} from '@aws-sdk/client-s3';
 import TypedConfigService from '../../shared/types/config-service.types';
 import { AWSConfig } from '../../shared/config/aws.config';
 import { DocumentContentType } from '../../shared/types/document.types';
+import { Readable } from 'stream';
 
 @Injectable()
 export class S3Service {
@@ -40,5 +45,28 @@ export class S3Service {
 		});
 
 		return await getSignedUrl(this.s3, command, { expiresIn });
+	}
+
+	public async getFile(key: string) {
+		const command = new GetObjectCommand({
+			Bucket: this.bucketName,
+			Key: key,
+		});
+
+		const response = await this.s3.send(command);
+
+		if (!response.Body) {
+			throw new Error('File not found in S3');
+		}
+
+		return response.Body as Readable;
+	}
+
+	public async streamToBuffer(stream: Readable): Promise<Buffer> {
+		const chunks: Buffer[] = [];
+		for await (const chunk of stream) {
+			chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+		}
+		return Buffer.concat(chunks);
 	}
 }

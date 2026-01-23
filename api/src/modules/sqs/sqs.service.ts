@@ -55,7 +55,7 @@ export class SQSService implements OnModuleInit {
 				if (!res.Messages?.length) continue;
 
 				for (const message of res.Messages) {
-					this.handleMessage(message);
+					await this.handleMessage(message);
 
 					await this.sqs.send(
 						new DeleteMessageCommand({
@@ -71,18 +71,16 @@ export class SQSService implements OnModuleInit {
 		}
 	}
 
-	handleMessage(message: Message) {
+	async handleMessage(message: Message) {
 		if (!message.Body) return message;
 
 		const body = JSON.parse(message.Body) as SQSBodyParsed;
-
-		console.log(JSON.stringify(body, null, 2));
 
 		if (!body.Records) return message;
 
 		for (const record of body.Records) {
 			if (isS3Record(record)) {
-				this.documentsSQSHandler.handle(record);
+				await this.documentsSQSHandler.handle(record);
 			} else {
 				console.log('Unknown record:', JSON.stringify(record, null, 2));
 			}
