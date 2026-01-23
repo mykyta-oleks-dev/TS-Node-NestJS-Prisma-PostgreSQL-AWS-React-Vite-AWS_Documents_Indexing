@@ -10,7 +10,7 @@ import {
 	documentContentTypes,
 } from '../../../shared/types/document.types';
 
-export class GetPutPresignedUrlBodyDto {
+export class GeneratePutUrlBodyDto {
 	@IsString()
 	@IsNotEmpty()
 	@MaxLength(200)

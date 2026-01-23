@@ -9,6 +9,7 @@ import {
 	appConfigOptions,
 	TypedConfigModule,
 } from './shared/config/app.config';
+import { SQSModule } from './modules/sqs/sqs.module';
 
 @Module({
 	imports: [
@@ -17,6 +18,7 @@ import {
 		PrismaModule,
 		DocumentsModule,
 		S3Module,
+		SQSModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],

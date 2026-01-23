@@ -3,6 +3,7 @@ import { registerAs } from '@nestjs/config';
 export interface AWSConfig {
 	region: string;
 	bucketName: string;
+	sqsQueueUrl: string;
 	accessKeyId: string;
 	secretAccessKey: string;
 }
@@ -12,6 +13,7 @@ const awsConfig = registerAs(
 	(): AWSConfig => ({
 		region: process.env.AWS_REGION ?? 'us-east-1',
 		bucketName: process.env.AWS_S3_BUCKET ?? 'default-bucket',
+		sqsQueueUrl: process.env.AWS_SQS_QUEUE_URL ?? '',
 		accessKeyId: process.env.AWS_ACCESS_KEY_ID ?? '',
 		secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY ?? '',
 	}),

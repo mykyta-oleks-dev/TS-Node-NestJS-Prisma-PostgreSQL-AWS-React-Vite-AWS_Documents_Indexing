@@ -13,6 +13,7 @@ export const appConfigSchema = Joi.object({
 	DATABASE_URL: Joi.string().required(),
 	AWS_REGION: Joi.string().required(),
 	AWS_S3_BUCKET: Joi.string().required(),
+	AWS_SQS_QUEUE_URL: Joi.string().required(),
 	AWS_ACCESS_KEY_ID: Joi.string().required(),
 	AWS_SECRET_ACCESS_KEY: Joi.string().required(),
 });
