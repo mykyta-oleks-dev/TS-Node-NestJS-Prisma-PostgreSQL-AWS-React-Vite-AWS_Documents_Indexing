@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { S3Service } from '../s3/s3.service';
-import { GetPutPresignedUrlDto } from './dtos/presigned-url.dto';
+import { GetPutPresignedUrlBodyDto } from './dtos/presigned-url.body.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { extensions } from '../../shared/types/document.types';
 
@@ -22,7 +22,7 @@ export class DocumentsService {
 		});
 	}
 
-	public async getPresignedUrl(body: GetPutPresignedUrlDto) {
+	public async getPresignedUrl(body: GetPutPresignedUrlBodyDto) {
 		const prefix = extensions[body.contentType];
 
 		const filename = body.filename.endsWith(prefix)
@@ -35,7 +35,8 @@ export class DocumentsService {
 
 		const document = await this.prisma.document.create({
 			data: {
-				filename: filename,
+				filename,
+				key,
 				userEmail: body.email,
 				mimeType: body.contentType,
 				uploadedAt: now,
