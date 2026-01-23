@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { DocumentsRepository } from '../../documents/documents.repository';
 import { S3Record } from '../../../shared/types/sqs.types';
 import { S3Service } from '../../s3/s3.service';
-import { PDF_DOCUMENT_TYPE } from '../../../shared/constants/document.constants';
 import { DocumentTextService } from '../../documents/services/document-text.service';
 
 @Injectable()
@@ -30,16 +29,8 @@ export class DocumentsSQSHandler {
 			throw new Error(`Document "${key}" not yet available, retrying`);
 		}
 
-		let text: string;
+		const text = await this.documentTextService.extract(buffer);
 
-		switch (document.mimeType) {
-			case PDF_DOCUMENT_TYPE:
-				text = await this.documentTextService.extractFromPdf(buffer);
-				console.log(text);
-				break;
-
-			default:
-				throw new Error(`Unsupported mime type: ${document.mimeType}`);
-		}
+		console.log(text);
 	}
 }

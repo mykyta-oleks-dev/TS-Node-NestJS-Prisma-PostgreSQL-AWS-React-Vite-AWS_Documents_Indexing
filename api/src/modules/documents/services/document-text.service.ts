@@ -1,10 +1,13 @@
-import { PDFParse } from 'pdf-parse';
-// import mammoth from 'mammoth';
+import officeparser from 'officeparser';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class DocumentTextService {
-	public async extractFromPdf(buffer: Buffer) {
-		return (await new PDFParse({ data: buffer }).getText({})).text;
+	public async extract(buffer: Buffer) {
+		const ast = await officeparser.parseOffice(buffer);
+
+		const text = ast.toText();
+
+		return text;
 	}
 }
