@@ -1,17 +1,13 @@
-import { Button } from '@/components/ui/button';
-import { useEmailStore } from './store/email.store';
 import AuthForm from './components/auth';
+import UserDocuments from './components/documents';
+import { useEmailStore } from './store/email.store';
 
 function App() {
-	const { email, setEmail } = useEmailStore();
+	const email = useEmailStore((s) => s.email);
 
 	return (
-		<div className="flex min-h-svh flex-col items-center justify-center p-3">
-			{email ? (
-				<Button onClick={() => setEmail(undefined)}>Click me</Button>
-			) : (
-				<AuthForm />
-			)}
+		<div className="flex h-full flex-col items-center justify-center p-5">
+			{email ? <UserDocuments /> : <AuthForm />}
 		</div>
 	);
 }
