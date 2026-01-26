@@ -8,6 +8,7 @@ import { Document } from '../../generated/prisma/client';
 export class OpenSearchService implements OnModuleInit {
 	private readonly client: Client;
 	private index: string;
+	private isOnline = false;
 
 	constructor(private readonly configService: TypedConfigService) {
 		const openSearchConfig =
@@ -32,26 +33,41 @@ export class OpenSearchService implements OnModuleInit {
 	}
 
 	private async ensureIndex() {
-		const exists = await this.client.indices.exists({
-			index: this.index,
-		});
-
-		if (!exists.body) {
-			await this.client.indices.create({
+		try {
+			const exists = await this.client.indices.exists({
 				index: this.index,
-				body: {
-					mappings: {
-						properties: {
-							textContent: { type: 'text' },
-							filename: { type: 'keyword' },
+			});
+
+			if (!exists.body) {
+				await this.client.indices.create({
+					index: this.index,
+					body: {
+						mappings: {
+							properties: {
+								textContent: { type: 'text' },
+								filename: { type: 'keyword' },
+							},
 						},
 					},
-				},
-			});
+				});
+			}
+
+			this.isOnline = true;
+			console.log('OpenSearch index is ready.');
+		} catch (error) {
+			console.error(
+				'Error ensuring OpenSearch index:',
+				(error as Error).message,
+				'\nIndexing is disabled.',
+			);
 		}
 	}
 
 	public async indexDocument(document: Document, textContent: string) {
+		if (!this.isOnline) {
+			return false;
+		}
+
 		const response = await this.client.index({
 			index: this.index,
 			id: document.id,
@@ -61,13 +77,44 @@ export class OpenSearchService implements OnModuleInit {
 			},
 		});
 
-		console.log(response);
+		return response;
 	}
 
 	public async deleteDocument(documentId: string) {
-		await this.client.delete({
+		if (!this.isOnline) {
+			return false;
+		}
+
+		return await this.client.delete({
 			index: this.index,
 			id: documentId,
 		});
+	}
+
+	public async search(query: string) {
+		if (!this.isOnline) {
+			return [];
+		}
+
+		const response = await this.client.search({
+			index: this.index,
+			body: {
+				query: {
+					match: {
+						textContent: {
+							query,
+							fuzziness: 'AUTO',
+						},
+					},
+				},
+				highlight: {
+					fields: {
+						textContent: {},
+					},
+				},
+			},
+		});
+
+		return response.body.hits.hits;
 	}
 }

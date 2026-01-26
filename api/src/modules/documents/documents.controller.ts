@@ -1,23 +1,65 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
-import { S3Service } from '../s3/s3.service';
+import {
+	Body,
+	Controller,
+	Delete,
+	ForbiddenException,
+	Get,
+	HttpCode,
+	HttpStatus,
+	Param,
+	Post,
+	Query,
+	Req,
+} from '@nestjs/common';
 import { DocumentsService } from './documents.service';
 import { GeneratePutUrlBodyDto } from './dtos/presigned-url.body.dto';
 import { GetDocumentsQueryDto } from './dtos/get-documents.query.dto';
+import { UseEmailAuthGuard } from '../../shared/guards/email.guard';
+import { type Request } from 'express';
 
 @Controller('documents')
 export class DocumentsController {
-	constructor(
-		private readonly documentsService: DocumentsService,
-		private readonly s3Service: S3Service,
-	) {}
+	constructor(private readonly documentsService: DocumentsService) {}
 
 	@Get()
-	public getDocumentsByEmail(@Query() { email }: GetDocumentsQueryDto) {
-		return this.documentsService.getDocuments(email);
+	@UseEmailAuthGuard()
+	public getDocumentsByEmail(
+		@Query() { query }: GetDocumentsQueryDto,
+		@Req() { user }: Request,
+	) {
+		if (user) return this.documentsService.getDocuments(user, query);
 	}
 
 	@Post('presigned-url')
-	public async getPresignedUrl(@Body() body: GeneratePutUrlBodyDto) {
+	@UseEmailAuthGuard()
+	public async getPresignedUrl(
+		@Body() body: GeneratePutUrlBodyDto,
+		@Req() { user }: Request,
+	) {
+		if (user !== body.email) {
+			throw new ForbiddenException(
+				'Cannot create documents for other accounts',
+			);
+		}
+
 		return await this.documentsService.getPresignedUrl(body);
+	}
+
+	@Delete(':id')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@UseEmailAuthGuard()
+	public async deleteDocument(
+		@Param('id') id: string,
+		@Req() { user }: Request,
+	) {
+		const document = await this.documentsService.getDocument(id);
+
+		if (document.userEmail !== user) {
+			throw new ForbiddenException(
+				'Delete requests are forbidden from wrong accounts',
+			);
+		}
+
+		return await this.documentsService.deleteDocument(id);
 	}
 }

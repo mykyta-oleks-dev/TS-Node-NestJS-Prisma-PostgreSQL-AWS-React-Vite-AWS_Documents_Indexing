@@ -8,15 +8,20 @@ import { Status } from '../../generated/prisma/enums';
 export class DocumentsRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
-	public async getDocuments(email: string) {
+	public async getDocuments(email: string, ids?: string[]) {
 		return this.prisma.document.findMany({
 			where: {
 				userEmail: email,
+				id: { in: ids },
 			},
 			orderBy: {
 				uploadedAt: 'desc',
 			},
 		});
+	}
+
+	public async getDocumentById(id: string) {
+		return this.prisma.document.findUnique({ where: { id } });
 	}
 
 	public async getDocumentByKey(key: string) {
@@ -49,6 +54,12 @@ export class DocumentsRepository {
 		return this.prisma.document.update({
 			where: { id },
 			data: { status },
+		});
+	}
+
+	public async deleteDocument(id: string) {
+		return this.prisma.document.delete({
+			where: { id },
 		});
 	}
 }

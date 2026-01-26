@@ -27,6 +27,8 @@ export class DocumentsSQSHandler {
 
 		if (record.eventName === 'ObjectCreated:Put') {
 			await this.processObjectCreated(document, key);
+		} else if (record.eventName === 'ObjectRemoved:Delete') {
+			await this.processObjectDeleted(document);
 		}
 	}
 
@@ -51,6 +53,18 @@ export class DocumentsSQSHandler {
 				(error as Error).message,
 			);
 			await this.db.setStatus(document.id, 'error');
+		}
+	}
+
+	private async processObjectDeleted(document: Document) {
+		try {
+			await this.openSearchService.deleteDocument(document.id);
+			await this.db.deleteDocument(document.id);
+		} catch (error) {
+			console.error(
+				`Error deleting document with id ${document.id} from OpenSearch:`,
+				(error as Error).message,
+			);
 		}
 	}
 }

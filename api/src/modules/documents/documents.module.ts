@@ -4,6 +4,7 @@ import { DocumentsService } from './documents.service';
 import { S3Module } from '../s3/s3.module';
 import { DocumentsRepository } from './documents.repository';
 import { DocumentTextService } from './services/document-text.service';
+import { OpenSearchModule } from '../opensearch/opensearch.module';
 
 @Global()
 @Module({
@@ -13,7 +14,7 @@ import { DocumentTextService } from './services/document-text.service';
 export class DocumentsDomainModule {}
 
 @Module({
-	imports: [S3Module, DocumentsDomainModule],
+	imports: [S3Module, DocumentsDomainModule, OpenSearchModule],
 	controllers: [DocumentsController],
 	providers: [DocumentsService],
 })

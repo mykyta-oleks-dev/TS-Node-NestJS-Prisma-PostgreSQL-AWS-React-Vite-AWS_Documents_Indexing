@@ -4,6 +4,7 @@ import {
 	S3Client,
 	PutObjectCommand,
 	GetObjectCommand,
+	DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import TypedConfigService from '../../shared/types/config-service.types';
 import { AWSConfig } from '../../shared/config/aws.config';
@@ -68,5 +69,14 @@ export class S3Service {
 			chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
 		}
 		return Buffer.concat(chunks);
+	}
+
+	public async deleteFile(key: string) {
+		const command = new DeleteObjectCommand({
+			Bucket: this.bucketName,
+			Key: key,
+		});
+
+		await this.s3.send(command);
 	}
 }
