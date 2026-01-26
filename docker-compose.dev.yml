@@ -1,25 +1,6 @@
 name: aws-documents-dev
 
 services:
-    api:
-        build:
-            context: ./api
-            target: dev
-        env_file:
-            - api/.env
-        restart: no
-        volumes:
-            - ./api:/app
-            - /app/node_modules
-        ports:
-            - '3000:3000'
-        environment:
-            NODE_ENV: 'development'
-            WATCHPACK_POLLING: 'true'
-        depends_on:
-            db:
-                condition: service_healthy
-
     db:
         image: postgres:17
         restart: no
