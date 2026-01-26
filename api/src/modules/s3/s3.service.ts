@@ -37,12 +37,14 @@ export class S3Service {
 	public async generatePutPresignedUrl(
 		key: string,
 		contentType: DocumentContentType,
+		size: number,
 		expiresIn = 60,
 	) {
 		const command = new PutObjectCommand({
 			Bucket: this.bucketName,
 			ContentType: contentType,
 			Key: key,
+			ContentLength: size,
 		});
 
 		return await getSignedUrl(this.s3, command, { expiresIn });

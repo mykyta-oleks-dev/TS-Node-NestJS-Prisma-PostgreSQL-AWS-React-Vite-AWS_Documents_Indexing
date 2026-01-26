@@ -58,6 +58,7 @@ export class DocumentsService {
 		const url = await this.s3.generatePutPresignedUrl(
 			document.key,
 			body.contentType,
+			body.size,
 		);
 
 		return { url, document };

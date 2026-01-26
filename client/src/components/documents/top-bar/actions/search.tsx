@@ -19,7 +19,7 @@ const Search = () => {
 	};
 
 	return (
-		<form onSubmit={onSubmit}>
+		<form onSubmit={onSubmit} className="flex-1">
 			<InputGroup>
 				<InputGroupInput
 					onChange={(e) => setValue(e.target.value)}

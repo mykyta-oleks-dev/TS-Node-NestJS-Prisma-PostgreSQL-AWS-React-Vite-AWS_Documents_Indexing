@@ -2,8 +2,11 @@ import {
 	IsEmail,
 	IsIn,
 	IsNotEmpty,
+	IsNumber,
 	IsString,
+	Max,
 	MaxLength,
+	Min,
 } from 'class-validator';
 import {
 	type DocumentContentType,
@@ -24,4 +27,10 @@ export class GeneratePutUrlBodyDto {
 	@IsNotEmpty()
 	@IsEmail()
 	email: string;
+
+	@IsNotEmpty()
+	@IsNumber()
+	@Min(1)
+	@Max(10 * 1024 * 1024)
+	size: number;
 }

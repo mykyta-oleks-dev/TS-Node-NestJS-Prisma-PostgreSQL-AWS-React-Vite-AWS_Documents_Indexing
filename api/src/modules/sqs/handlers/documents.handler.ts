@@ -47,6 +47,7 @@ export class DocumentsSQSHandler {
 
 			await this.openSearchService.indexDocument(document, text);
 			await this.db.setStatus(document.id, 'success');
+			console.log(`Document "${key}" is processed`);
 		} catch (error) {
 			console.error(
 				`Error processing document with key ${key}:`,

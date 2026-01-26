@@ -6,7 +6,9 @@ const AuthDisplay = () => {
 	return (
 		<div className="flex gap-3 w-full justify-between">
 			<span>{email}</span>
-			<Button onClick={() => setEmail(undefined)}>Logout</Button>
+			<Button variant="outline" onClick={() => setEmail(undefined)}>
+				Logout
+			</Button>
 		</div>
 	);
 };

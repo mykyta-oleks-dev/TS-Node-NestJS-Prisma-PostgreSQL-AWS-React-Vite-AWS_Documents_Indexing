@@ -1,16 +1,22 @@
+import { Badge } from '@/components/ui/badge';
 import {
 	Item,
 	ItemContent,
 	ItemDescription,
 	ItemTitle,
 } from '@/components/ui/item';
-import type { Document } from '@/types/document.types';
+import type { Document, Status } from '@/types/document.types';
 
 const ListItem = ({ item }: { item: Document }) => {
+	const badgeClasses = getClasses(item.status);
+
 	return (
 		<Item>
 			<ItemContent>
-				<ItemTitle>{item.filename}</ItemTitle>
+				<ItemTitle>
+					{item.filename}{' '}
+					<Badge className={badgeClasses}>{item.status}</Badge>
+				</ItemTitle>
 				<ItemDescription>
 					{item.uploadedAt.toLocaleString('en-US', {
 						year: 'numeric',
@@ -25,5 +31,16 @@ const ListItem = ({ item }: { item: Document }) => {
 		</Item>
 	);
 };
+
+function getClasses(status: Status) {
+	switch (status) {
+		case 'error':
+			return 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300';
+		case 'pending':
+			return 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300';
+		default:
+			return 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300';
+	}
+}
 
 export default ListItem;

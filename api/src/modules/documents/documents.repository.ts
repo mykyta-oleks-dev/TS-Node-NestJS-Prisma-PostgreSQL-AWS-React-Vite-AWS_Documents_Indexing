@@ -37,7 +37,7 @@ export class DocumentsRepository {
 
 		const now = new Date();
 
-		const key = `${body.email}/${now.getTime()}_${filename}`;
+		const key = `${body.email}/${now.getTime()}_${filename.replaceAll(' ', '+')}`;
 
 		return await this.prisma.document.create({
 			data: {
