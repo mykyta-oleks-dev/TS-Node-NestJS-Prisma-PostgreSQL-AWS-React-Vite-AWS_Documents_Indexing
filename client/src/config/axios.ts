@@ -1,8 +1,9 @@
+import { API_URL } from '@/constants/env.constants';
 import { useEmailStore } from '@/store/email.store';
 import axios from 'axios';
 
 export const axiosInstance = axios.create({
-	baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3000',
+	baseURL: API_URL,
 	headers: {
 		'Content-Type': 'application/json',
 	},

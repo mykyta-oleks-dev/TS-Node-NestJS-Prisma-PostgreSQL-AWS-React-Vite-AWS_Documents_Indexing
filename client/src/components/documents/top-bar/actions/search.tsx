@@ -15,14 +15,21 @@ const Search = () => {
 	const onSubmit = (e: FormEvent) => {
 		e.preventDefault();
 
-		setSearch(value);
+		setSearch(value.trim() === '' ? undefined : value.trim());
+		setValue(value.trim());
+	};
+
+	const onReset = () => {
+		setSearch(undefined);
+		setValue('');
 	};
 
 	return (
-		<form onSubmit={onSubmit} className="flex-1">
+		<form onSubmit={onSubmit} onReset={onReset} className="flex-1">
 			<InputGroup>
 				<InputGroupInput
 					onChange={(e) => setValue(e.target.value)}
+					value={value}
 					name="search"
 					placeholder="Search"
 				/>

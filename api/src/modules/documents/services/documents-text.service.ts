@@ -8,7 +8,7 @@ import {
 } from '../../../shared/constants/document.constants';
 
 @Injectable()
-export class DocumentTextService {
+export class DocumentsTextService {
 	public async extract(buffer: Buffer, key: string) {
 		if (key.endsWith(extensions[PDF_DOCUMENT_TYPE]))
 			return this.extractPdf(buffer);

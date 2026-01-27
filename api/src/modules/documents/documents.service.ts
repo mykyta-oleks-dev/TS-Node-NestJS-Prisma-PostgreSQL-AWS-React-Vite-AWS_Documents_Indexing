@@ -3,6 +3,7 @@ import { S3Service } from '../s3/s3.service';
 import { GeneratePutUrlBodyDto } from './dtos/presigned-url.body.dto';
 import { DocumentsRepository } from './documents.repository';
 import { OpenSearchService } from '../opensearch/opensearch.service';
+import { Document } from '../../generated/prisma/client';
 
 @Injectable()
 export class DocumentsService {
@@ -64,9 +65,7 @@ export class DocumentsService {
 		return { url, document };
 	}
 
-	public async deleteDocument(id: string) {
-		const document = await this.db.getDocumentById(id);
-
+	public async deleteDocument(document: Document) {
 		if (document) await this.s3.deleteFile(document.key);
 	}
 }

@@ -1,17 +1,15 @@
 import { deleteFile } from '@/api/documents.api';
 import { useEmailStore } from '@/store/email.store';
-import { useSearchStore } from '@/store/search.store';
 import { type Document } from '@/types/document.types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 export function useDeleteDocument() {
 	const email = useEmailStore((s) => s.email);
-	const search = useSearchStore((s) => s.search);
 
 	const qc = useQueryClient();
 
-	const key = ['documents', email, search];
+	const queryKey = ['documents', email];
 
 	return useMutation({
 		mutationFn: async (id: string) => {
@@ -19,21 +17,28 @@ export function useDeleteDocument() {
 		},
 
 		onMutate: async (id) => {
-			await qc.cancelQueries({ queryKey: ['documents'] });
+			await qc.cancelQueries({ queryKey });
 
-			const prev = qc.getQueryData<Document[]>(key);
+			const prev = qc.getQueriesData<Document[]>({
+				queryKey,
+				exact: false,
+			});
 
-			qc.setQueryData<Document[]>(key, (old = []) =>
-				old.filter((d) => d.id !== id),
+			qc.setQueriesData<Document[]>(
+				{
+					queryKey,
+					exact: false,
+				},
+				(old = []) => old.filter((d) => d.id !== id),
 			);
 
 			return { prev };
 		},
 
 		onError: (_err, _file, ctx) => {
-			if (ctx?.prev) {
-				qc.setQueryData(key, ctx.prev);
-			}
+			ctx?.prev.forEach(([key, data]) => {
+				qc.setQueryData(key, data);
+			});
 
 			toast.error(
 				'There was an error during the delete process. Please try again later.',

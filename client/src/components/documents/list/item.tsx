@@ -13,7 +13,7 @@ const ListItem = ({ item }: { item: Document }) => {
 	const badgeClasses = getClasses(item.status);
 
 	return (
-		<Item>
+		<Item variant="outline">
 			<ItemContent>
 				<ItemTitle>
 					{item.filename}{' '}
