@@ -1,18 +1,33 @@
-import officeparser from 'officeparser';
 import { Injectable } from '@nestjs/common';
+import { PDFParse } from 'pdf-parse';
+import mammoth from 'mammoth';
+import { extensions } from '../../../shared/types/document.types';
+import {
+	PDF_DOCUMENT_TYPE,
+	WORD_DOCUMENT_TYPE_DOCX,
+} from '../../../shared/constants/document.constants';
 
 @Injectable()
 export class DocumentTextService {
-	public async extract(buffer: Buffer) {
-		try {
-			const ast = await officeparser.parseOffice(buffer);
+	public async extract(buffer: Buffer, key: string) {
+		if (key.endsWith(extensions[PDF_DOCUMENT_TYPE]))
+			return this.extractPdf(buffer);
+		if (key.endsWith(extensions[WORD_DOCUMENT_TYPE_DOCX]))
+			return this.extractDoc(buffer);
+		return '';
+	}
 
-			const text = ast.toText();
+	private async extractPdf(buffer: Buffer) {
+		const uint8Array = new Uint8Array(buffer);
 
-			return text;
-		} catch (err) {
-			console.log(err);
-			throw err;
-		}
+		const data = new PDFParse(uint8Array);
+		const text = await data.getText();
+
+		return text.text;
+	}
+
+	private async extractDoc(buffer: Buffer) {
+		const result = await mammoth.extractRawText({ buffer });
+		return result.value;
 	}
 }

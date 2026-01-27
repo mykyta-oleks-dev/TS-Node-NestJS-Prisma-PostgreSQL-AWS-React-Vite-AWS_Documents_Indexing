@@ -16,7 +16,10 @@ export class DocumentsSQSHandler {
 	) {}
 
 	public async handle(record: S3Record) {
-		const key = decodeURIComponent(record.s3.object.key);
+		const key = decodeURIComponent(record.s3.object.key).replaceAll(
+			'+',
+			' ',
+		);
 
 		const document = await this.db.getDocumentByKey(key);
 
@@ -43,7 +46,7 @@ export class DocumentsSQSHandler {
 				);
 			}
 
-			const text = await this.documentTextService.extract(buffer);
+			const text = await this.documentTextService.extract(buffer, key);
 
 			await this.openSearchService.indexDocument(document, text);
 			await this.db.setStatus(document.id, 'success');
