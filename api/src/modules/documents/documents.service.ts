@@ -24,10 +24,7 @@ export class DocumentsService {
 		const hits = await this.openSearchService.search(query);
 
 		if (hits.length === 0) {
-			return (await this.db.getDocuments(email)).map((doc) => ({
-				...doc,
-				highlights: undefined,
-			}));
+			return [];
 		}
 
 		const documentIds = hits.map((hit) => hit._id);

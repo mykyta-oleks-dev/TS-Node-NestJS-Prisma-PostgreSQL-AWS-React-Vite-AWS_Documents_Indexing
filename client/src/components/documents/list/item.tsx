@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/item';
 import type { Document, Status } from '@/types/document.types';
 import DeleteButton from './delete-button';
+import Highlights from './highlights';
 
 const ListItem = ({ item }: { item: Document }) => {
 	const badgeClasses = getClasses(item.status);
@@ -29,6 +30,9 @@ const ListItem = ({ item }: { item: Document }) => {
 						second: '2-digit',
 					})}
 				</ItemDescription>
+				{item.highlights?.textContent && (
+					<Highlights highlights={item.highlights.textContent} />
+				)}
 			</ItemContent>
 			<ItemActions>
 				<DeleteButton id={item.id} />

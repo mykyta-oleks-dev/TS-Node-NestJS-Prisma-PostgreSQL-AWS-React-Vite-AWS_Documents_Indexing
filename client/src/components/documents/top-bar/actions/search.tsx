@@ -4,25 +4,11 @@ import {
 	InputGroupButton,
 	InputGroupInput,
 } from '@/components/ui/input-group';
-import { useSearchStore } from '@/store/search.store';
+import { useDocumentsSearch } from '@/hooks/useDocumentsSearch';
 import { CircleXIcon, SearchIcon } from 'lucide-react';
-import { useState, type FormEvent } from 'react';
 
 const Search = () => {
-	const [value, setValue] = useState('');
-	const setSearch = useSearchStore((s) => s.setSearch);
-
-	const onSubmit = (e: FormEvent) => {
-		e.preventDefault();
-
-		setSearch(value.trim() === '' ? undefined : value.trim());
-		setValue(value.trim());
-	};
-
-	const onReset = () => {
-		setSearch(undefined);
-		setValue('');
-	};
+	const { onSubmit, onReset, value, setValue } = useDocumentsSearch();
 
 	return (
 		<form onSubmit={onSubmit} onReset={onReset} className="flex-1">

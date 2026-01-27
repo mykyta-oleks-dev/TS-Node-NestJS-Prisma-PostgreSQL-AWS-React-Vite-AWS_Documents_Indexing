@@ -1,11 +1,25 @@
 import axios from 'axios';
 import { axiosInstance } from '@/config/axios';
-import type { DocumentContentType, Document } from '@/types/document.types';
+import type {
+	DocumentContentType,
+	Document,
+	DBDocument,
+} from '@/types/document.types';
 
 export interface UploadUrlResponse {
 	url: string;
 	document: Document;
 }
+
+export const getDocuments = async (search: string | undefined) => {
+	const queryParams = search?.length ? `?query=${search}` : '';
+
+	const res = await axiosInstance.get<DBDocument[]>(
+		`/documents${queryParams}`,
+	);
+
+	return res.data;
+};
 
 export const getUploadUrl = async (
 	filename: string,

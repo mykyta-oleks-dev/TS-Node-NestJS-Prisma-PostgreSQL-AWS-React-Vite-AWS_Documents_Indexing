@@ -1,7 +1,7 @@
-import { axiosInstance } from '@/config/axios';
+import { getDocuments } from '@/api/documents.api';
 import { useEmailStore } from '@/store/email.store';
 import { useSearchStore } from '@/store/search.store';
-import { convertDBDocument, type DBDocument } from '@/types/document.types';
+import { convertDBDocument } from '@/types/document.types';
 import { useQuery } from '@tanstack/react-query';
 
 export const useDocuments = () => {
@@ -13,9 +13,9 @@ export const useDocuments = () => {
 		queryFn: async () => {
 			if (!email) return;
 
-			const res = await axiosInstance.get<DBDocument[]>('/documents');
+			const data = await getDocuments(search);
 
-			return res.data.map((d) => convertDBDocument(d));
+			return data.map((d) => convertDBDocument(d));
 		},
 	});
 };

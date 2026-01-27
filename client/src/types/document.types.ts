@@ -26,7 +26,7 @@ export interface IDocument {
 	key: string;
 	mimeType: DocumentContentType;
 	status: Status;
-	highlights: Record<string, string[]> | undefined;
+	highlights: { textContent: string[] } | undefined;
 }
 
 export interface DBDocument extends IDocument {
