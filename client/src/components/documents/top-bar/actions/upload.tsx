@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { useUploadDocument } from '@/hooks/useUploadDocument';
 import { useRef, useState } from 'react';
 
@@ -11,7 +12,7 @@ const UploadButton = () => {
 		const file = e.target.files?.[0];
 		if (!file) return;
 
-		upload.mutate(file);
+		await upload.mutateAsync(file);
 		setInputKey((prev) => prev + 1);
 	};
 
@@ -29,8 +30,12 @@ const UploadButton = () => {
 				id="upload"
 				ref={fileInputRef}
 				key={inputKey}
+				disabled={upload.isPending}
 			/>
-			<Button onClick={handleButtonClick}>Upload</Button>
+			<Button onClick={handleButtonClick} disabled={upload.isPending}>
+				{upload.isPending && <Spinner data-icon="inline-start" />}
+				Upload
+			</Button>
 		</>
 	);
 };

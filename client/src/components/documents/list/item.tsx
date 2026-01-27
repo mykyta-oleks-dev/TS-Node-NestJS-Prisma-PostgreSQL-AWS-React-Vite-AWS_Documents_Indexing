@@ -1,11 +1,13 @@
 import { Badge } from '@/components/ui/badge';
 import {
 	Item,
+	ItemActions,
 	ItemContent,
 	ItemDescription,
 	ItemTitle,
 } from '@/components/ui/item';
 import type { Document, Status } from '@/types/document.types';
+import DeleteButton from './delete-button';
 
 const ListItem = ({ item }: { item: Document }) => {
 	const badgeClasses = getClasses(item.status);
@@ -28,6 +30,9 @@ const ListItem = ({ item }: { item: Document }) => {
 					})}
 				</ItemDescription>
 			</ItemContent>
+			<ItemActions>
+				<DeleteButton id={item.id} />
+			</ItemActions>
 		</Item>
 	);
 };

@@ -6,17 +6,20 @@ import {
 } from '@/types/document.types';
 import { validateFile } from '@/lib/validation';
 import { useEmailStore } from '@/store/email.store';
+import { useSearchStore } from '@/store/search.store';
+import { toast } from 'sonner';
 
 export function useUploadDocument() {
 	const email = useEmailStore((s) => s.email);
+	const search = useSearchStore((s) => s.search);
 
 	const qc = useQueryClient();
+
+	const key = ['documents', email, search];
 
 	return useMutation({
 		mutationFn: async (file: File) => {
 			if (!validateFile(file) || !email) return;
-
-			console.log({ file });
 
 			const { url, document } = await getUploadUrl(
 				file.name,
@@ -35,7 +38,7 @@ export function useUploadDocument() {
 
 			await qc.cancelQueries({ queryKey: ['documents'] });
 
-			const prev = qc.getQueryData<Document[]>(['documents']);
+			const prev = qc.getQueryData<Document[]>(key);
 
 			// optimistic document
 			const optimisticDoc: Document = {
@@ -49,7 +52,7 @@ export function useUploadDocument() {
 				uploadedAt: new Date(),
 			};
 
-			qc.setQueryData<Document[]>(['documents', email], (old = []) => [
+			qc.setQueryData<Document[]>(key, (old = []) => [
 				optimisticDoc,
 				...old,
 			]);
@@ -59,13 +62,19 @@ export function useUploadDocument() {
 
 		onError: (_err, _file, ctx) => {
 			if (ctx?.prev) {
-				qc.setQueryData(['documents', email], ctx.prev);
+				qc.setQueryData(key, ctx.prev);
 			}
+
+			toast.error(
+				'There was an error during the upload process. Please try again later.',
+			);
 		},
 
 		onSettled: () => {
 			// server is source of truth
 			qc.invalidateQueries({ queryKey: ['documents'] });
+
+			toast.success('The document is successfuly uploaded and saved!');
 		},
 	});
 }

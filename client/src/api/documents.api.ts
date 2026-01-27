@@ -27,3 +27,7 @@ export const putFileToS3 = async (url: string, file: File) => {
 		},
 	});
 };
+
+export const deleteFile = async (id: string) => {
+	await axiosInstance.delete(`/documents/${id}`);
+};
