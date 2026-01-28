@@ -60,7 +60,7 @@ Go to corresponding app's folders to learn more from their `README.md`s.
 
 ## Running the project
 
-Refer to the apps' inner `README.md`-s for running them in development mode.
+Refer to the apps' inner `README.md`s for running them in development mode.
 
 ## Features
 
